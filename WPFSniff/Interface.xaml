@@ -1,0 +1,42 @@
+﻿<Window x:Class="WPFSniff.Interface"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFSniff"
+        mc:Ignorable="d"
+        Title="Interface" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="22"/>
+        </Grid.RowDefinitions>
+
+        <ListView x:Name="DevicelistView" Grid.Row="0" VerticalAlignment="Top" MouseDoubleClick="DeviceInfoList_MouseDoubleClick">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding DeviceID}"    Header="DeviceID"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Device}"      Header="Device"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Description}" Header="Description"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Addr}"        Header="IP Address"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <!-- <DataGrid x:Name="DeviceInfoGrid" Grid.Row="0" VerticalAlignment="Top" AutoGenerateColumns="False" MouseDoubleClick="DeviceInfoGrid_MouseDoubleClick">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding DeviceID}" Header="DeviceID"/>
+                <DataGridTextColumn Binding="{Binding Device}" Header="Device"/>
+                <DataGridTextColumn Binding="{Binding Description}" Header="Description"/>
+                <DataGridTextColumn Binding="{Binding Addr}" Header="IP Address"/>
+            </DataGrid.Columns>
+        </DataGrid> -->
+
+        <WrapPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Select" HorizontalAlignment="Left" VerticalAlignment="Top" Width="74" Click="Select_Click"/>
+            <Button Content="Refresh" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Refresh_Click"/>
+        </WrapPanel>
+        
+    </Grid>
+</Window>

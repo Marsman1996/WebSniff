@@ -5,8 +5,68 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFSniff"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
         
-    </Grid>
+        Title="Liu's Sniff"
+        Width="700"
+        Height="600"
+        MinWidth="700"
+        MinHeight="600"
+        Icon="Image/logo.ico"
+        WindowStartupLocation="CenterScreen"
+        
+        >
+
+    <DockPanel>
+        <!--停靠布局，让菜单栏和工具栏位于窗口顶部-->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <!--菜单项为MenuItem，文字使用属性 Header-->
+                <MenuItem Name="FileOpen" Header="Open"></MenuItem>
+                <MenuItem Header="Save"></MenuItem>
+                <MenuItem Header="Delete"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Interfaces">
+                <MenuItem Name="InterfacesChoose" Header="Choose" Click="InterfacesChoose_Click"></MenuItem>
+                <MenuItem Header="Start" Click="InterfacesStart_Click"></MenuItem>
+                <MenuItem Header="Stop"></MenuItem>
+                <MenuItem Header="Restart"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Filter">
+                <MenuItem Header="Set"></MenuItem>
+                <MenuItem Header="Unset"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="View"></MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="About"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <ToolBar DockPanel.Dock="Top">
+            <!--ToolBar和StatusBar就是一个容器-->
+            <Button Content="Save"></Button>
+            <Button Content="SaveAll"></Button>
+            <!--<Button Content="Interfaces" Click="Interface_Click"></Button>-->
+            <Button Content="Start" Click="InterfacesStart_Click"></Button>
+            <Button Content="Test"></Button>
+        </ToolBar>
+        <ListView x:Name="PacketsInfolistView" DockPanel.Dock="Top" VerticalAlignment="Top" Height="200" MouseDoubleClick="PacketsInfoList_MouseDoubleClick">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding ID}"         Header="ID"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding ArriveTime}" Header="ArriveTime"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding SourceAddr}" Header="SourceAddr"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding SourcePort}" Header="SourcePort"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding DestAddr}"   Header="DestAddr"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding DestPort}"   Header="DestPort"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Protocol}"   Header="Protocol"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Length}"     Header="Length"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <!-- <TextBox DockPanel.Dock="Top" Text="This is my space" Height="200"></TextBox> -->
+        <TextBox DockPanel.Dock="Top" Text="This is my space" Height="100"></TextBox>
+        <StatusBar DockPanel.Dock="Bottom">
+            <TextBlock Text="statusBar"></TextBlock>
+        </StatusBar>
+    </DockPanel>
+    
 </Window>
