@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+// using System.Windows.Forms;
 
 using SharpPcap;
 using SharpPcap.LibPcap;
@@ -31,7 +32,8 @@ namespace WPFSniff{
         public string DestAddr{get; set;}  
         public string DestPort{get; set;}  
         public string Protocol{get; set;}  
-        public string Length{get; set;}    
+        public int Length{get; set;}
+        public string Color{get; set;}
     }
 
     /// <summary>
@@ -47,6 +49,7 @@ namespace WPFSniff{
     public partial class MainWindow : Window{
         public MainWindow(){
             var devices = CaptureDeviceList.Instance;
+            // System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
         }
 
@@ -127,16 +130,26 @@ namespace WPFSniff{
             psi.DestAddr   = p.destination;
             psi.DestPort   = p.desPort;
             psi.Protocol   = p.protocol;
-            psi.Length     = p.color;
+            psi.Length     = p.data.Length;
+            psi.Color      = p.color;
             this.Dispatcher.Invoke(
                 DispatcherPriority.Normal, (ThreadStart)delegate(){
                     PacketsInfolistView.Items.Add(psi);
+                    
                 }
             );
+        }
 
+        public void InterfacesSStop_Click(object sender, RoutedEventArgs e){
+            try {
+                this.device.StopCapture();
+            }
+            catch { 
+                ;
+            }
+            this.device.Close();
+            this.deviceIsOpen = false;
         }
 
     }
-
-
 }

@@ -28,7 +28,7 @@
             <MenuItem Header="Interfaces">
                 <MenuItem Name="InterfacesChoose" Header="Choose" Click="InterfacesChoose_Click"></MenuItem>
                 <MenuItem Header="Start" Click="InterfacesStart_Click"></MenuItem>
-                <MenuItem Header="Stop"></MenuItem>
+                <MenuItem Header="Stop" Click="InterfacesSStop_Click"></MenuItem>
                 <MenuItem Header="Restart"></MenuItem>
             </MenuItem>
             <MenuItem Header="Filter">
@@ -46,7 +46,7 @@
             <Button Content="SaveAll"></Button>
             <!--<Button Content="Interfaces" Click="Interface_Click"></Button>-->
             <Button Content="Start" Click="InterfacesStart_Click"></Button>
-            <Button Content="Test"></Button>
+            <Button Content="Stop" Click="InterfacesSStop_Click"></Button>
         </ToolBar>
         <ListView x:Name="PacketsInfolistView" DockPanel.Dock="Top" VerticalAlignment="Top" Height="200" MouseDoubleClick="PacketsInfoList_MouseDoubleClick">
             <ListView.View>
@@ -59,8 +59,16 @@
                     <GridViewColumn DisplayMemberBinding="{Binding DestPort}"   Header="DestPort"/>
                     <GridViewColumn DisplayMemberBinding="{Binding Protocol}"   Header="Protocol"/>
                     <GridViewColumn DisplayMemberBinding="{Binding Length}"     Header="Length"/>
+                    <!-- <GridViewColumn DisplayMemberBinding="{Binding Color}"      Header="Color"/> -->
                 </GridView>
             </ListView.View>
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <!-- 设置触发器 -->
+                    <Setter Property="Background" Value="{Binding Color}"/>
+                </Style>
+            </ListView.ItemContainerStyle>
         </ListView>
         <!-- <TextBox DockPanel.Dock="Top" Text="This is my space" Height="200"></TextBox> -->
         <TextBox DockPanel.Dock="Top" Text="This is my space" Height="100"></TextBox>
