@@ -27,6 +27,7 @@ namespace WPFSniff{
         public string information;
         public string color;
         public string data;
+        public int paclen;
         public int index = 0;
 
 
@@ -65,7 +66,7 @@ namespace WPFSniff{
             temp = Packet.ParsePacket(pac.LinkLayerType, pac.Data);
             rawp = pac;
             DateTime time = pac.Timeval.Date;
-            this.time = time.Hour.ToString() + ":" + time.Minute.ToString() + ":" + time.Second.ToString() + ":" + time.Millisecond.ToString();
+            this.time = time.Date.ToString().Split()[0] + " " + time.Hour.ToString() + ":" + time.Minute.ToString() + ":" + time.Second.ToString() + ":" + time.Millisecond.ToString();
             this.destination = "";
             this.color = "";
             this.srcPort = "";
@@ -75,9 +76,10 @@ namespace WPFSniff{
             this.information = "";
             this.data = "";
             this.layer = pac.LinkLayerType;
-            PacketInforArray.Add("Total Length : " + temp.Bytes.Length.ToString() + "Bytes");
+            this.paclen = temp.Bytes.Length;
+            PacketInforArray.Add("Total Length : " + this.paclen.ToString() + "Bytes");
 
-            KeyWords.Add(temp.Bytes.Length.ToString());
+            KeyWords.Add(this.paclen.ToString());
 
             if (this.layer == PacketDotNet.LinkLayers.Ethernet){
                 //
@@ -85,13 +87,15 @@ namespace WPFSniff{
                 //
                 epac = (PacketDotNet.EthernetPacket)temp;
                 EthernetInforArray.Add("Ethernet II \n");
-                EthernetInforArray.Add("Destination Hardware Address: " + epac.DestinationHwAddress.ToString() + "\n");
-                EthernetInforArray.Add("Source Hardware Address: " + epac.SourceHwAddress.ToString() + "\n");
+                // EthernetInforArray.Add("Destination Hardware Address: " + epac.DestinationHwAddress.ToString() + "\n");
+                EthernetInforArray.Add("Destination Hardware Address: " + genHardwareAddr(epac.DestinationHwAddress.ToString()) + "\n");
+                // EthernetInforArray.Add("Source Hardware Address: " + epac.SourceHwAddress.ToString() + "\n");
+                EthernetInforArray.Add("Source Hardware Address: " + genHardwareAddr(epac.SourceHwAddress.ToString()) + "\n");
                 EthernetInforArray.Add("Type of the ethernet: " + epac.Type.ToString() + "\n");
 
                 KeyWords.Add("Ethernet".ToUpper());
-                KeyWords.Add(epac.DestinationHwAddress.ToString().ToUpper());
-                KeyWords.Add(epac.SourceHwAddress.ToString().ToUpper());
+                KeyWords.Add(genHardwareAddr(epac.DestinationHwAddress.ToString().ToUpper()));
+                KeyWords.Add(genHardwareAddr(epac.SourceHwAddress.ToString().ToUpper()));
                 KeyWords.Add(epac.Type.ToString().ToUpper());
 
                 //
@@ -174,9 +178,9 @@ namespace WPFSniff{
                     ArpInforArray.Add("HardwareAddressLength: " + arppacket.HardwareAddressLength.ToString());
                     ArpInforArray.Add("ProtocolAddressLength: " + arppacket.ProtocolAddressLength.ToString());
                     ArpInforArray.Add("Operation: " + arppacket.Operation.ToString());
-                    ArpInforArray.Add("SenderHardwareAddress: " + arppacket.SenderHardwareAddress.ToString());
+                    ArpInforArray.Add("SenderHardwareAddress: " + genHardwareAddr(arppacket.SenderHardwareAddress.ToString()));
                     ArpInforArray.Add("SenderProtocolAddress: " + arppacket.SenderProtocolAddress.ToString());
-                    ArpInforArray.Add("TargetHardwareAddress: " + arppacket.TargetHardwareAddress.ToString());
+                    ArpInforArray.Add("TargetHardwareAddress: " + genHardwareAddr(arppacket.TargetHardwareAddress.ToString()));
                     ArpInforArray.Add("TargetProtocolAddress: " + arppacket.TargetProtocolAddress.ToString());
 
 
@@ -187,9 +191,9 @@ namespace WPFSniff{
                     this.destination = arppacket.TargetProtocolAddress.ToString();
                     this.information = arppacket.SenderProtocolAddress.ToString() + " want to get in touch with " + arppacket.TargetProtocolAddress.ToString();
 
-                    KeyWords.Add(arppacket.SenderHardwareAddress.ToString().ToUpper());
+                    KeyWords.Add(genHardwareAddr(arppacket.SenderHardwareAddress.ToString().ToUpper()));
                     KeyWords.Add(arppacket.SenderProtocolAddress.ToString().ToUpper());
-                    KeyWords.Add(arppacket.TargetHardwareAddress.ToString().ToUpper());
+                    KeyWords.Add(genHardwareAddr(arppacket.TargetHardwareAddress.ToString().ToUpper()));
                     KeyWords.Add(arppacket.TargetProtocolAddress.ToString().ToUpper());
                     KeyWords.Add(this.color);
                 }
@@ -449,6 +453,12 @@ namespace WPFSniff{
             }
 
             this.KeyWords.Add(this.protocol);
+        }
+
+        public string genHardwareAddr(string HwAddress){
+            for(int i = 10; i > 0; i = i - 2)
+                HwAddress = HwAddress.Insert(i, "-");
+            return HwAddress;
         }
     }
 }

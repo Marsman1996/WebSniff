@@ -6,16 +6,17 @@
         xmlns:local="clr-namespace:WPFSniff"
         mc:Ignorable="d"
         
-        Title="Liu's Sniff"
-        Width="700"
-        Height="600"
+        Title="Liu Yuwei's Sniff"
+        Width="1000"
+        Height="700"
         MinWidth="700"
-        MinHeight="600"
+        MinHeight="700"
         Icon="Image/logo.ico"
         WindowStartupLocation="CenterScreen"
         
         >
 
+    
     <DockPanel>
         <!--停靠布局，让菜单栏和工具栏位于窗口顶部-->
         <Menu DockPanel.Dock="Top">
@@ -35,7 +36,10 @@
                 <MenuItem Header="Set"></MenuItem>
                 <MenuItem Header="Unset"></MenuItem>
             </MenuItem>
-            <MenuItem Header="View"></MenuItem>
+            <MenuItem Header="Analyse">
+                <MenuItem Header="Network Layer"></MenuItem>
+                <MenuItem Header="Transport Layer"></MenuItem>
+            </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem Header="About"></MenuItem>
             </MenuItem>
@@ -43,7 +47,7 @@
         <ToolBar DockPanel.Dock="Top">
             <!--ToolBar和StatusBar就是一个容器-->
             <Button Content="Save"></Button>
-            <Button Content="SaveAll"></Button>
+            <Button Content="Open"></Button>
             <!--<Button Content="Interfaces" Click="Interface_Click"></Button>-->
             <Button Content="Start" Click="InterfacesStart_Click"></Button>
             <Button Content="Stop" Click="InterfacesSStop_Click"></Button>
@@ -51,7 +55,7 @@
         <ListView x:Name="PacketsInfolistView" DockPanel.Dock="Top" VerticalAlignment="Top" Height="200" MouseDoubleClick="PacketsInfoList_MouseDoubleClick">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn DisplayMemberBinding="{Binding ID}"         Header="ID"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding ID}"         Header="ID" Width="40"/>
                     <GridViewColumn DisplayMemberBinding="{Binding ArriveTime}" Header="ArriveTime"/>
                     <GridViewColumn DisplayMemberBinding="{Binding SourceAddr}" Header="SourceAddr"/>
                     <GridViewColumn DisplayMemberBinding="{Binding SourcePort}" Header="SourcePort"/>
@@ -71,9 +75,14 @@
             </ListView.ItemContainerStyle>
         </ListView>
         <!-- <TextBox DockPanel.Dock="Top" Text="This is my space" Height="200"></TextBox> -->
-        <TextBox DockPanel.Dock="Top" Text="This is my space" Height="100"></TextBox>
+        <!-- <TextBox DockPanel.Dock="Top" Text="This is my space" Height="100"></TextBox> -->
+        <TreeView x:Name="PackettreeView" DockPanel.Dock="Top" Height="200" VerticalAlignment="Top"/>
+        
+        <ScrollViewer Name="scrollViewer1" DockPanel.Dock="Top" Height="200" VerticalAlignment="Top" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"> 
+            <TextBlock x:Name="PacketStatus" FontFamily="Courier New" />
+        </ScrollViewer>
         <StatusBar DockPanel.Dock="Bottom">
-            <TextBlock Text="statusBar"></TextBlock>
+            <TextBlock Text="statusBar" />
         </StatusBar>
     </DockPanel>
     
