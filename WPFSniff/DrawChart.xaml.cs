@@ -25,7 +25,6 @@ namespace WPFSniff
             List<string> xval = new List<string>();
             List<string> yval = new List<string>();
             foreach (string key in temp_dic.Keys){
-                // MessageBox.Show(temp_dic[key].ToString(), key);
                 xval.Add(key);
                 yval.Add(temp_dic[key].ToString());
             }
@@ -99,7 +98,7 @@ namespace WPFSniff
             // 添加数据线到数据序列。                
             chart.Series.Add(dataSeries);
 
-            //将生产的图表增加到Grid，然后通过Grid添加到上层Grid.           
+            //将生产的图表增加到Grid，然后通过Grid添加到上层Grid.
             Grid gr = new Grid();
             gr.Children.Add(chart);
             chart_display.Children.Add(gr);

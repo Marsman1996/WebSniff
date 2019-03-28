@@ -19,8 +19,8 @@
         <!--停靠布局，让菜单栏和工具栏位于窗口顶部-->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
-                <MenuItem Name="FileOpen" Header="Open"></MenuItem>
-                <MenuItem Header="Save"></MenuItem>
+                <MenuItem Header="Open" Click="SaveFile_Click"></MenuItem>
+                <MenuItem Header="Save" Click="OpenFile_Click"></MenuItem>
                 <MenuItem Header="Delete"></MenuItem>
             </MenuItem>
             <MenuItem Header="Interfaces">
@@ -42,11 +42,17 @@
             </MenuItem>
         </Menu>
         <ToolBar DockPanel.Dock="Top">
-            <Button Content="Save" Click="SaveFile_Click"/>
-            <Button Content="Open" Click="OpenFile_Click"></Button>
+            <Button Click="SaveFile_Click">
+                <Image Source="Image/save.ico" Width="20" Height="20"/>
+            </Button>
+            <Button Click="OpenFile_Click">
+                <Image Source="Image/open.ico" Width="20" Height="20"/>
+            </Button>
             <!--<Button Content="Interfaces" Click="Interface_Click"></Button>-->
-            <Button Content="Start" Click="InterfacesStart_Click"></Button>
-            <Button Content="Stop" Click="InterfacesSStop_Click"></Button>
+            <Button Click="InterfacesStart_Click">
+                <Image x:Name="ss_image" Source="Image/start.png" Width="20" Height="20"/>
+            </Button>
+            <!-- <Button Content="Stop" Click="InterfacesSStop_Click"></Button> -->
 
             <TextBlock Text="  |  " FontSize="16" TextAlignment="Center" />
             <TextBlock Text="Filter" />
@@ -66,10 +72,14 @@
         </ToolBar>
         
         <StatusBar DockPanel.Dock="Bottom" Height="20">
-            <TextBlock Name="st_interface" />
-            <TextBlock Name="st_st" />
-            <TextBlock Name="st_filter" />
-            <TextBlock Name="st_search" />
+            <TextBlock Text="Interface: "/>
+            <TextBlock Name="st_interface" Text="None"/>
+            <TextBlock Text="Status: " />
+            <TextBlock Name="st_st" Text="Not run"/>
+            <TextBlock Text="Filter: " />
+            <TextBlock Name="st_filter" Text="None"/>
+            <TextBlock Text="Search: " />
+            <TextBlock Name="st_search" Text="None"/>
         </StatusBar>
 
         <ScrollViewer Name="scrollViewer1" DockPanel.Dock="Bottom" Height="200" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">

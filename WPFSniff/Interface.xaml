@@ -13,7 +13,7 @@
             <RowDefinition Height="22"/>
         </Grid.RowDefinitions>
 
-        <ListView x:Name="DevicelistView" Grid.Row="0" VerticalAlignment="Top" MouseDoubleClick="DeviceInfoList_MouseDoubleClick">
+        <ListView x:Name="DevicelistView" Grid.Row="0" VerticalAlignment="Top" MouseDoubleClick="Select_Click">
             <ListView.View>
                 <GridView>
                     <GridViewColumn DisplayMemberBinding="{Binding DeviceID}"    Header="DeviceID"/>

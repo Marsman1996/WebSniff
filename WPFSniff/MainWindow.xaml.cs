@@ -15,13 +15,18 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-// using System.Windows.Forms;
+using System.Windows.Forms;
+using MessageBox = System.Windows.MessageBox;
+using ListView = System.Windows.Controls.ListView;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using System.IO;
 
 using SharpPcap;
 using SharpPcap.LibPcap;
 using SharpPcap.AirPcap;
 using SharpPcap.WinPcap;
 using PacketDotNet;
+using ListViewItem = System.Windows.Forms.ListViewItem;
 
 namespace WPFSniff{
     public struct PacketsInfo{
@@ -41,7 +46,7 @@ namespace WPFSniff{
     /// </summary>
     public class Globalvar{
         public static int DeviceID = -1;
-        public static int pacnum = -1;
+        public static string Device = "None";
     }
     
     /// <summary>
@@ -81,22 +86,39 @@ namespace WPFSniff{
         private void InterfacesChoose_Click(object sender, RoutedEventArgs e){
             Interface i = new Interface();
             i.ShowDialog();
+            st_interface.Text=Globalvar.Device;
         }
 
         private void InterfacesStart_Click(object sender, RoutedEventArgs e){
-            if(Globalvar.DeviceID == -1){
-                MessageBox.Show("You didn't select any device!");
-                return ;
-            }
-            var devices = CaptureDeviceList.Instance;
-            this.device = devices[Globalvar.DeviceID];
-            this.deviceIsOpen = true;
-            PacketsInfolistView.Items.Clear();
-            Network_dic = new Dictionary<string, int>();
-            TRANS_dic = new Dictionary<string, int>();
+            if(this.deviceIsOpen == false){
+                if(Globalvar.DeviceID == -1){
+                    MessageBox.Show("You didn't select any device!");
+                    return ;
+                }
+                var devices = CaptureDeviceList.Instance;
+                this.device = devices[Globalvar.DeviceID];
+                this.deviceIsOpen = true;
+                PacketsInfolistView.Items.Clear();
+                Network_dic = new Dictionary<string, int>();
+                TRANS_dic = new Dictionary<string, int>();
 
-            Thread newThread = new Thread(new ThreadStart(threadHandler));
-            newThread.Start();
+                Thread newThread = new Thread(new ThreadStart(threadHandler));
+                newThread.Start();
+                st_st.Text="Running";
+                ss_image.Source = new BitmapImage(new Uri("Image/stop.png",UriKind.RelativeOrAbsolute));
+            }
+            else{
+                try {
+                    this.device.StopCapture();
+                }
+                catch { 
+                    ;
+                }
+                this.device.Close();
+                this.deviceIsOpen = false;
+                st_st.Text = "Not Run";
+                ss_image.Source = new BitmapImage(new Uri("Image/start.png", UriKind.RelativeOrAbsolute));
+            }
         }
 
         private void threadHandler(){
@@ -153,10 +175,7 @@ namespace WPFSniff{
                 TRANS_dic[p.TRANS_type] = 1;
             }
             
-
             p.index = (p.index == 0) ? (PacketsInfolistView.Items.Count + 1) : p.index;
-            // ListViewItem item = new ListViewItem(new string[] { p.index.ToString(), p.time, p.source, p.destination, p.protocol, p.information });
-            // item.BackColor = Color.FromName(p.color);
             PacketsInfo psi = new PacketsInfo{
                 ID = p.index,
                 ArriveTime = p.time,
@@ -185,6 +204,7 @@ namespace WPFSniff{
             }
             this.device.Close();
             this.deviceIsOpen = false;
+            st_st.Text = "Not Run";
         }
 
         private void PacketsInfoList_MouseDoubleClick(object sender, RoutedEventArgs e){
@@ -333,6 +353,7 @@ namespace WPFSniff{
 
             if (this.deviceIsOpen)
                 MessageBox.Show("This will work during the next Capture!");
+            st_filter.Text=this.filter;
         }
 
         private void Searchrule_Keydown(object sender, KeyEventArgs e){
@@ -355,21 +376,79 @@ namespace WPFSniff{
                         }
                     }
                 }
+                st_search.Text = stext;
             }
             else{
                 foreach (packet p in this.packets){
                     ProcessContext(p);
                     continue;
                 }
+                st_search.Text = "None";
             }
+
         }
 
         private void SaveFile_Click(object sender, RoutedEventArgs e){
+            System.Windows.Forms.SaveFileDialog savefile1 = new SaveFileDialog();
+            savefile1.InitialDirectory = Environment.CurrentDirectory;
+            savefile1.Filter = "pcap files (*.pcap)|*.pcap";
+            savefile1.AddExtension = true;
+            savefile1.RestoreDirectory = true;
+            savefile1.ShowDialog();
 
+            if (savefile1.FileName.ToString() != ""){
+                try{
+                    string name = savefile1.FileName;
+                    this.device.Open();
+                    SharpPcap.LibPcap.CaptureFileWriterDevice captureFileWriter = new SharpPcap.LibPcap.CaptureFileWriterDevice((SharpPcap.LibPcap.LibPcapLiveDevice)this.device, name);
+                    foreach (packet pac in this.packets){
+                        captureFileWriter.Write(pac.rawp);
+                    }
+                    MessageBox.Show("Svae Success!");
+                }
+                catch (Exception){
+                    MessageBox.Show("Save Fail!");
+                }
+            }
         }
 
         private void OpenFile_Click(object sender, RoutedEventArgs e){
+            System.Windows.Forms.OpenFileDialog openfile = new OpenFileDialog();
+            openfile.InitialDirectory = Environment.CurrentDirectory;
+            openfile.Filter = "pcap files (*.pcap)|*.pcap";
+            openfile.CheckFileExists = true;
+            openfile.RestoreDirectory = true;
 
+            if (openfile.ShowDialog() == System.Windows.Forms.DialogResult.OK){
+                string name = openfile.FileName;
+
+                PacketsInfolistView.Items.Clear();
+                Network_dic = new Dictionary<string, int>();
+                TRANS_dic = new Dictionary<string, int>();
+
+                this.packets = new ArrayList();
+
+                SharpPcap.LibPcap.CaptureFileReaderDevice reader = new SharpPcap.LibPcap.CaptureFileReaderDevice(name);
+                RawCapture rawp;
+
+                try{
+                    rawp = reader.GetNextPacket();
+                    while (rawp != null){
+                        packet temp = new packet(rawp);
+                        packets.Add(temp);
+
+                        ProcessContext(temp);
+
+                        rawp = reader.GetNextPacket();
+                    }
+                    MessageBox.Show("success!");
+                }
+                catch (Exception){
+                    MessageBox.Show("fail!");
+                }
+            }
         }
+
+
     }
 }

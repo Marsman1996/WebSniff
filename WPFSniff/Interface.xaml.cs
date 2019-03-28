@@ -65,20 +65,12 @@ namespace WPFSniff{
             Refresh();
         }
 
-        private void DeviceInfoList_MouseDoubleClick(object sender, MouseButtonEventArgs e){
-            var listview = sender as ListView;
-            var currentitem = listview.SelectedItem;
-
-            //Globalvar.DeviceID = di.DeviceID;
-            DeviceInfo di = (DeviceInfo)currentitem;
-            Globalvar.DeviceID = di.DeviceID - 1;
-            this.Close();
-        }
-
         private void Select_Click(object sender, RoutedEventArgs e){
             var currentitem = DevicelistView.SelectedItem;
             DeviceInfo di = (DeviceInfo)currentitem;
             Globalvar.DeviceID = di.DeviceID - 1;
+            Globalvar.Device = di.Device;
+            // MainWindow.st_interface.Text = di.Description;
             this.Close();
         }
 
