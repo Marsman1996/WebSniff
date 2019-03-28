@@ -63,6 +63,21 @@ namespace WPFSniff{
         public ArrayList simpackets = new ArrayList();
         private ArrayList packets = new ArrayList();
 
+        Dictionary<string, int> Network_dic = new Dictionary<string, int>();
+        Dictionary<string, int> TRANS_dic = new Dictionary<string, int>();
+
+        private void AnalyseNL_Click(Object sender, RoutedEventArgs e){
+            Dictionary<string, int> temp_dic = new Dictionary<string, int>(Network_dic);
+            DrawChart nl_chart = new DrawChart("Network Layer", temp_dic);
+            nl_chart.Show();
+        }
+
+        private void AnalyseTL_Click(Object sender, RoutedEventArgs e){
+            Dictionary<string, int> temp_dic = new Dictionary<string, int>(TRANS_dic);
+            DrawChart nl_chart = new DrawChart("Transport Layer", temp_dic);
+            nl_chart.Show();
+        }
+
         private void InterfacesChoose_Click(object sender, RoutedEventArgs e){
             Interface i = new Interface();
             i.ShowDialog();
@@ -116,6 +131,28 @@ namespace WPFSniff{
         public void ProcessContext(RawCapture pac){
             packet p = new packet(pac);
             packets.Add(p);
+            
+            if(p.Network_type == null){
+                ;
+            }
+            else if(Network_dic.ContainsKey(p.Network_type)){
+                Network_dic[p.Network_type]++;
+            }
+            else{
+                Network_dic[p.Network_type] = 1;
+            }
+
+            if(p.TRANS_type == null){
+                ;
+            }
+            else if(TRANS_dic.ContainsKey(p.TRANS_type)){
+                TRANS_dic[p.TRANS_type]++;
+            }
+            else{
+                TRANS_dic[p.TRANS_type] = 1;
+            }
+            
+
             p.index = (PacketsInfolistView.Items.Count + 1);
             // ListViewItem item = new ListViewItem(new string[] { p.index.ToString(), p.time, p.source, p.destination, p.protocol, p.information });
             // item.BackColor = Color.FromName(p.color);

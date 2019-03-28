@@ -27,8 +27,10 @@ namespace WPFSniff{
         public string information;
         public string color;
         public string data;
-        public int paclen;
         public int index = 0;
+        public int paclen;
+        public string Network_type;
+        public string TRANS_type;
 
 
         //
@@ -97,6 +99,7 @@ namespace WPFSniff{
                 KeyWords.Add(genHardwareAddr(epac.DestinationHwAddress.ToString().ToUpper()));
                 KeyWords.Add(genHardwareAddr(epac.SourceHwAddress.ToString().ToUpper()));
                 KeyWords.Add(epac.Type.ToString().ToUpper());
+                Network_type = epac.Type.ToString().ToUpper();
 
                 //
                 //ip层
@@ -130,6 +133,7 @@ namespace WPFSniff{
                         KeyWords.Add(ip4.Id.ToString().ToUpper());
                         KeyWords.Add(ip4.SourceAddress.ToString().ToUpper());
                         KeyWords.Add(ip4.DestinationAddress.ToString().ToUpper());
+                        TRANS_type = ip4.Protocol.ToString().ToUpper();
 
 
                         if (ip4.Protocol.ToString() == "ICMP") { icmpProtocol(); }
@@ -159,6 +163,7 @@ namespace WPFSniff{
                         KeyWords.Add(ip6.Protocol.ToString().ToUpper());
                         KeyWords.Add(ip6.SourceAddress.ToString().ToUpper());
                         KeyWords.Add(ip6.DestinationAddress.ToString().ToUpper());
+                        TRANS_type = ip6.Protocol.ToString().ToUpper();
 
                         if (ip6.Protocol.ToString() == "ICMP") { icmpProtocol(); }
                         else if (ip6.Protocol.ToString() == "UDP") { udpProtocol(); }

@@ -76,7 +76,9 @@ namespace WPFSniff{
         }
 
         private void Select_Click(object sender, RoutedEventArgs e){
-            // TODO: finish this logic
+            var currentitem = DevicelistView.SelectedItem;
+            DeviceInfo di = (DeviceInfo)currentitem;
+            Globalvar.DeviceID = di.DeviceID - 1;
             this.Close();
         }
 
