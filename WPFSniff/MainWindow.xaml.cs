@@ -92,6 +92,8 @@ namespace WPFSniff{
             this.device = devices[Globalvar.DeviceID];
             this.deviceIsOpen = true;
             PacketsInfolistView.Items.Clear();
+            Network_dic = new Dictionary<string, int>();
+            TRANS_dic = new Dictionary<string, int>();
 
             Thread newThread = new Thread(new ThreadStart(threadHandler));
             newThread.Start();
@@ -125,13 +127,12 @@ namespace WPFSniff{
         }
 
         public void packetarrive(object sender, CaptureEventArgs e){
-            ProcessContext(e.Packet);
+            packet p = new packet(e.Packet);
+            packets.Add(p);
+            ProcessContext(p);
         }
 
-        public void ProcessContext(RawCapture pac){
-            packet p = new packet(pac);
-            packets.Add(p);
-            
+        public void ProcessContext(packet p){
             if(p.Network_type == null){
                 ;
             }
@@ -153,19 +154,20 @@ namespace WPFSniff{
             }
             
 
-            p.index = (PacketsInfolistView.Items.Count + 1);
+            p.index = (p.index == 0) ? (PacketsInfolistView.Items.Count + 1) : p.index;
             // ListViewItem item = new ListViewItem(new string[] { p.index.ToString(), p.time, p.source, p.destination, p.protocol, p.information });
             // item.BackColor = Color.FromName(p.color);
-            PacketsInfo psi = new PacketsInfo();
-            psi.ID         = p.index;
-            psi.ArriveTime = p.time;
-            psi.SourceAddr = p.source;
-            psi.SourcePort = p.srcPort;
-            psi.DestAddr   = p.destination;
-            psi.DestPort   = p.desPort;
-            psi.Protocol   = p.protocol;
-            psi.Length     = p.paclen;
-            psi.Color      = p.color;
+            PacketsInfo psi = new PacketsInfo{
+                ID = p.index,
+                ArriveTime = p.time,
+                SourceAddr = p.source,
+                SourcePort = p.srcPort,
+                DestAddr = p.destination,
+                DestPort = p.desPort,
+                Protocol = p.protocol,
+                Length = p.paclen,
+                Color = p.color
+            };
             this.Dispatcher.Invoke(
                 DispatcherPriority.Normal, (ThreadStart)delegate(){
                     PacketsInfolistView.Items.Add(psi);
@@ -304,5 +306,70 @@ namespace WPFSniff{
             return hexstr;
         }
 
+        private void Filterrule_Keydown(object sender, KeyEventArgs e){
+            if(e.Key.ToString() != "Return")
+                return ;
+            this.filter = "";
+            int item = filterchoice.SelectedIndex;
+            if (item != -1){
+                switch (item){
+                    case 0:
+                        filter = "" + Filterrule.Text;
+                        break;
+                    case 1:
+                        filter = "dst port " + Filterrule.Text;
+                        break;
+                    case 2:
+                        filter = "src port " + Filterrule.Text;
+                        break;
+                    case 3:
+                        filter = "des host " + Filterrule.Text;
+                        break;
+                    case 4:
+                        filter = "src host " + Filterrule.Text;
+                        break;
+                }
+            }
+
+            if (this.deviceIsOpen)
+                MessageBox.Show("This will work during the next Capture!");
+        }
+
+        private void Searchrule_Keydown(object sender, KeyEventArgs e){
+            if (e.Key.ToString() != "Return")
+                return ;
+            if(this.deviceIsOpen){
+                MessageBox.Show("You must stop Capture first!");
+                return ;
+            }
+            string stext = Searchrule.Text;
+            PacketsInfolistView.Items.Clear();
+            Network_dic = new Dictionary<string, int>();
+            TRANS_dic = new Dictionary<string, int>();
+            if(stext != ""){
+                foreach (packet p in this.packets){
+                    for (int i = 0; i < p.KeyWords.Count; i++){
+                        if (stext.ToUpper() == p.KeyWords[i].ToString().ToUpper()){
+                            ProcessContext(p);
+                            continue;
+                        }
+                    }
+                }
+            }
+            else{
+                foreach (packet p in this.packets){
+                    ProcessContext(p);
+                    continue;
+                }
+            }
+        }
+
+        private void SaveFile_Click(object sender, RoutedEventArgs e){
+
+        }
+
+        private void OpenFile_Click(object sender, RoutedEventArgs e){
+
+        }
     }
 }
