@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Drawing;
-// using System.Windows.Forms;
 using System.Collections;
 using SharpPcap;
 using System.Threading;
 using System.IO;
 using System.Text.RegularExpressions;
 using PacketDotNet;
+using System.Windows;
 
 namespace WPFSniff{
     public partial class packet{
@@ -136,11 +136,21 @@ namespace WPFSniff{
                         TRANS_type = ip4.Protocol.ToString().ToUpper();
 
 
-                        if (ip4.Protocol.ToString() == "ICMP") { icmpProtocol(); }
-                        else if (ip4.Protocol.ToString() == "UDP") { udpProtocol(); }
-                        else if (ip4.Protocol.ToString() == "TCP") { tcpProtocol(); }
-                        else if (ip4.Protocol.ToString() == "IGMP") { igmpProtocol(); }
-                        else { ;}
+                        if (ip4.Protocol.ToString() == "ICMP") {
+                            icmpProtocol();
+                        }
+                        else if (ip4.Protocol.ToString() == "UDP") {
+                            udpProtocol();
+                        }
+                        else if (ip4.Protocol.ToString() == "TCP") {
+                            tcpProtocol();
+                        }
+                        else if (ip4.Protocol.ToString() == "IGMP") {
+                            igmpProtocol();
+                        }
+                        else {
+                            ;
+                        }
 
                     }
                     else if (epac.Type.ToString() == "IpV6"){
@@ -164,12 +174,24 @@ namespace WPFSniff{
                         KeyWords.Add(ip6.SourceAddress.ToString().ToUpper());
                         KeyWords.Add(ip6.DestinationAddress.ToString().ToUpper());
                         TRANS_type = ip6.Protocol.ToString().ToUpper();
+                        // if(ip6.PayloadData != null && ip6.PayloadData[0] == 58)
+                        //     MessageBox.Show("ICMPv6");
 
-                        if (ip6.Protocol.ToString() == "ICMP") { icmpProtocol(); }
-                        else if (ip6.Protocol.ToString() == "UDP") { udpProtocol(); }
-                        else if (ip6.Protocol.ToString() == "TCP") { tcpProtocol(); }
-                        else if (ip6.Protocol.ToString() == "IGMP") { igmpProtocol(); }
-                        else { ;}
+                        if (ip6.Protocol.ToString() == "ICMPV6") {
+                            icmpProtocol();
+                        }
+                        else if (ip6.Protocol.ToString() == "UDP") {
+                            udpProtocol();
+                        }
+                        else if (ip6.Protocol.ToString() == "TCP") {
+                            tcpProtocol();
+                        }
+                        else if (ip6.Protocol.ToString() == "IGMP") {
+                            igmpProtocol();
+                        }
+                        else if (ip6.PayloadData != null && ip6.PayloadData[0] == 58) {
+                            icmpProtocol();;
+                        }
 
                         KeyWords.Add(this.color.ToString().ToUpper());
                         KeyWords.Add(this.protocol.ToString().ToUpper());
@@ -236,10 +258,16 @@ namespace WPFSniff{
                 this.data = Encoding.UTF8.GetString(icmppacket.PayloadData);
                 this.information = " id=" + icmppacket.ID.ToString() + ", seq=" + icmppacket.Sequence.ToString() + ", ttl=" + ip4.TimeToLive.ToString();
             }
-            else if (epac.Type.ToString() == "IpV6" && ip6.Protocol.ToString() == "ICMP"){
+            else if (epac.Type.ToString() == "IpV6" ){
                 var icmppacket = (ICMPv6Packet)ip6.Extract(typeof(ICMPv6Packet));
 
-                IcmpInforArray.Add("Type: " + icmppacket.Type.ToString() + "\n");
+
+                try {
+                    IcmpInforArray.Add("Type: " + icmppacket.Type.ToString() + "\n");
+                }
+                catch {
+                    ;
+                }
                 IcmpInforArray.Add("Checksum: " + icmppacket.Checksum.ToString() + "\n");
                 IcmpInforArray.Add("Code: " + icmppacket.Code.ToString() + "\n");
                 IcmpInforArray.Add("Identifier: " + Convert.ToString(icmppacket.Bytes[4], 10) + "\n");
@@ -247,9 +275,12 @@ namespace WPFSniff{
                 KeyWords.Add(Convert.ToString(icmppacket.Bytes[4], 10).ToUpper());
 
                 this.color = "Gold";
-                this.information = icmppacket.Type.ToString() + "id = " + Convert.ToString(icmppacket.Bytes[4], 10);
+                //this.information = icmppacket.Type.ToString() + "id = " + Convert.ToString(icmppacket.Bytes[4], 10);
             }
-            else { ;}
+            else { 
+                MessageBox.Show("ICMPv6");
+                ;
+            }
         }
 
         /// <summary>
@@ -284,6 +315,8 @@ namespace WPFSniff{
             TcpInforArray.Add("Sequence Number: " + tcppacket.SequenceNumber.ToString() + "\n");
             TcpInforArray.Add("Acknowledge Number: " + tcppacket.AcknowledgmentNumber.ToString() + "\n");
             TcpInforArray.Add("Offset: " + tcppacket.DataOffset.ToString() + "\n");
+            TcpInforArray.Add("NS: " + tcppacket.NS.ToString() + "\n");
+            TcpInforArray.Add("CWR: " + tcppacket.CWR.ToString() + "\n");
             TcpInforArray.Add("URG: " + tcppacket.Urg.ToString() + "\n");
             TcpInforArray.Add("ACK: " + tcppacket.Ack.ToString() + "\n");
             TcpInforArray.Add("PSH: " + tcppacket.Psh.ToString() + "\n");

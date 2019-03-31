@@ -64,8 +64,6 @@ namespace WPFSniff{
         private string filter;
         private bool deviceIsOpen;
 
-        public ArrayList reassemblyPac = new ArrayList();
-        public ArrayList simpackets = new ArrayList();
         private ArrayList packets = new ArrayList();
 
         Dictionary<string, int> Network_dic = new Dictionary<string, int>();
@@ -99,6 +97,7 @@ namespace WPFSniff{
                 this.device = devices[Globalvar.DeviceID];
                 this.deviceIsOpen = true;
                 PacketsInfolistView.Items.Clear();
+                packets = new ArrayList();
                 Network_dic = new Dictionary<string, int>();
                 TRANS_dic = new Dictionary<string, int>();
 
@@ -149,13 +148,19 @@ namespace WPFSniff{
         }
 
         public void packetarrive(object sender, CaptureEventArgs e){
-            packet p = new packet(e.Packet);
+            packet p;
+            try{
+                p = new packet(e.Packet);
+            }
+            catch{
+                return ;
+            }
             packets.Add(p);
             ProcessContext(p);
         }
 
         public void ProcessContext(packet p){
-            if(p.Network_type == null){
+            if(p.Network_type == null || (p.Network_type != "IPV4" && p.Network_type != "IPV6" && p.Network_type != "ARP" && p.Network_type != "LLDP")){
                 ;
             }
             else if(Network_dic.ContainsKey(p.Network_type)){
@@ -165,7 +170,7 @@ namespace WPFSniff{
                 Network_dic[p.Network_type] = 1;
             }
 
-            if(p.TRANS_type == null){
+            if(p.TRANS_type == null || p.TRANS_type == "139"){
                 ;
             }
             else if(TRANS_dic.ContainsKey(p.TRANS_type)){

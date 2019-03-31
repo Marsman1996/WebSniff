@@ -4,10 +4,8 @@ WebSniff is the homework of Network Attack and Defense Foundation, which could c
 It is based on [SharpPcap lib](https://github.com/chmorgan/sharppcap), developed with WPF/C# and run in Windows platform.  
 
 ## How to use
-
-## Intro
-
-## Design
-
-## Impl
-
+0. 安装必要的运行库Win10Pcap
+1. 进入Interface->Choose选择要监视的网卡
+2. 点Start开始监视, Stop停止抓包
+3. Analyse可视化显示种类
+4. Filter和Search设置过滤
